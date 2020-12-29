@@ -1,6 +1,10 @@
 {
   "name": "vue-creating-robots",
   "version": "0.1.0",
+  "author": {
+    "email": "sergiopgomes92@gmail.com",
+    "name": "Sérgio Gomes"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
