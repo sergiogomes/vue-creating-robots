@@ -1,48 +1,115 @@
 <template>
-     <div>
+  <div>
+
     <div class="top-row">
       <div class="top part">
-        <img src="./data/images/head-big-eye.png" title="head"/>
-        <button class="prev-selector">&#9668;</button>
-        <button class="next-selector">&#9658;</button>
+        <img v-bind:src="availableParts.heads[robot.selectedHeadIndex].src" title="head" />
+        <button class="prev-selector"
+          v-on:click="selectPreviousPart('selectedHeadIndex', 'heads')">
+          &#9668;
+        </button>
+        <button class="next-selector"
+          v-on:click="selectNextPart('selectedHeadIndex', 'heads')">
+          &#9658;
+        </button>
       </div>
     </div>
+
     <div class="middle-row">
       <div class="left part">
-        <img src="./data/images/arm-articulated-claw.png" title="left arm"/>
-        <button class="prev-selector">&#9650;</button>
-        <button class="next-selector">&#9660;</button>
+        <img v-bind:src="availableParts.arms[robot.selectedLeftArmIndex].src" title="left arm" />
+        <button class="prev-selector"
+          v-on:click="selectPreviousPart('selectedLeftArmIndex', 'arms')">
+          &#9650;
+        </button>
+        <button class="next-selector"
+          v-on:click="selectNextPart('selectedLeftArmIndex', 'arms')">
+          &#9660;
+        </button>
       </div>
+
       <div class="center part">
-        <img src="./data/images/torso-flexible-gauged.png" title="left arm"/>
-        <button class="prev-selector">&#9668;</button>
-        <button class="next-selector">&#9658;</button>
+        <img v-bind:src="availableParts.torsos[robot.selectedTorsoIndex].src" title="torsos" />
+        <button class="prev-selector"
+          v-on:click="selectPreviousPart('selectedTorsoIndex', 'torsos')">
+          &#9668;
+        </button>
+        <button class="next-selector"
+          v-on:click="selectNextPart('selectedTorsoIndex', 'torsos')">
+          &#9658;
+        </button>
       </div>
+
       <div class="right part">
-        <img src="./data/images/arm-dual-claw.png" title="left arm"/>
-        <button class="prev-selector">&#9650;</button>
-        <button class="next-selector">&#9660;</button>
+        <img v-bind:src="availableParts.arms[robot.selectedRightArmIndex].src" title="right arm" />
+        <button class="prev-selector"
+          v-on:click="selectPreviousPart('selectedRightArmIndex', 'arms')">
+          &#9650;
+        </button>
+        <button class="next-selector"
+          v-on:click="selectNextPart('selectedRightArmIndex', 'arms')">
+          &#9660;
+        </button>
       </div>
     </div>
+
     <div class="bottom-row">
       <div class="bottom part">
-        <img src="./data/images/base-single-wheel.png" title="left arm"/>
-        <button class="prev-selector">&#9668;</button>
-        <button class="next-selector">&#9658;</button>
+        <img v-bind:src="availableParts.bases[robot.selectedBaseIndex].src" title="bases" />
+        <button class="prev-selector"
+          v-on:click="selectPreviousPart('selectedBaseIndex', 'bases')">
+          &#9668;
+        </button>
+        <button class="next-selector"
+          v-on:click="selectNextPart('selectedBaseIndex', 'bases')">
+          &#9658;
+        </button>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import availableParts from './data/parts';
 
+const getPreviousValidIndex = (index, length) => {
+  const deprecatedIndex = index - 1;
+  return deprecatedIndex < 0 ? length - 1 : deprecatedIndex;
+};
+
+const getNextValidIndex = (index, length) => {
+  const incrementedIndex = index + 1;
+  return incrementedIndex > length - 1 ? 0 : incrementedIndex;
+};
+
 export default {
   name: 'RobotBuilder',
   data() {
     return {
       availableParts,
+      robot: {
+        selectedHeadIndex: 0,
+        selectedTorsoIndex: 0,
+        selectedLeftArmIndex: 0,
+        selectedRightArmIndex: 0,
+        selectedBaseIndex: 0,
+      },
     };
+  },
+  methods: {
+    selectNextPart(part, group) {
+      this.robot[part] = getNextValidIndex(
+        this.robot[part],
+        this.availableParts[group].length,
+      );
+    },
+    selectPreviousPart(part, group) {
+      this.robot[part] = getPreviousValidIndex(
+        this.robot[part],
+        this.availableParts[group].length,
+      );
+    },
   },
 };
 </script>
