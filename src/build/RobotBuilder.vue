@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="content">
+
+    <button class="add-to-cart" @click="addToCart()">
+      Add to Cart
+    </button>
 
     <div class="top-row">
       <div class="top part">
@@ -92,6 +96,7 @@ export default {
   data() {
     return {
       availableParts,
+      cart: [],
       robot: {
         selectedHeadIndex: 0,
         selectedTorsoIndex: 0,
@@ -113,6 +118,15 @@ export default {
     },
   },
   methods: {
+    addToCart() {
+      const robot = this.selectedRobot;
+      const cost = robot.head.cost
+        + robot.leftArm.cost
+        + robot.torso.cost
+        + robot.rightArm.cost
+        + robot.base.cost;
+      this.cart.push({ ...robot, cost });
+    },
     selectNextPart(part, group) {
       this.robot[part] = getNextValidIndex(
         this.robot[part],
@@ -226,5 +240,15 @@ export default {
 }
 .sale {
   color: red;
+}
+.content {
+  position: relative
+}
+.add-to-cart {
+  position: absolute;
+  right: 30px;
+  width: 220px;
+  padding: 3px;
+  font-size: 16px;
 }
 </style>
