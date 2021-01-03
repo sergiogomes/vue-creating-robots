@@ -1,78 +1,63 @@
 <template>
   <div class="content">
 
-    <button class="add-to-cart" @click="addToCart()">
-      Add to Cart
-    </button>
+    <div class="preview">
+      <div class="preview-content">
+        <div class="top-row">
+          <img :src="selectedRobot.head.src"/>
+        </div>
+        <div class="middle-row">
+          <img :src="selectedRobot.leftArm.src" class="rotate-left"/>
+          <img :src="selectedRobot.torso.src"/>
+          <img :src="selectedRobot.rightArm.src" class="rotate-right"/>
+        </div>
+        <div class="bottom-row">
+          <img :src="selectedRobot.base.src"/>
+        </div>
+      </div>
+      <button class="add-to-cart" @click="addToCart()">
+        Add to Cart
+      </button>
+    </div>
 
     <div class="top-row">
-      <div :class="[saleBorderClass, 'top', 'part']">
+      <!-- <div :class="[saleBorderClass, 'top', 'part']">
         <div class="robot-name">
           {{ selectedRobot.head.title }}
           <span class="sale" v-if="selectedRobot.head.onSale">Sale!</span>
         </div>
-        <img :src="selectedRobot.head.src" title="head" />
-        <button class="prev-selector"
-          @click="selectPreviousPart('selectedHeadIndex', 'heads')">
-          &#9668;
-        </button>
-        <button class="next-selector"
-          @click="selectNextPart('selectedHeadIndex', 'heads')">
-          &#9658;
-        </button>
-      </div>
+      </div> -->
+      <PartSelector
+        position="top"
+        :parts="availableParts.heads"
+        @partSelected="part => selectedRobot.head=part"
+      />
     </div>
 
     <div class="middle-row">
-      <div class="left part">
-        <img :src="selectedRobot.leftArm.src" title="left arm" />
-        <button class="prev-selector"
-          @click="selectPreviousPart('selectedLeftArmIndex', 'arms')">
-          &#9650;
-        </button>
-        <button class="next-selector"
-          @click="selectNextPart('selectedLeftArmIndex', 'arms')">
-          &#9660;
-        </button>
-      </div>
-
-      <div class="center part">
-        <img :src="selectedRobot.torso.src" title="torsos" />
-        <button class="prev-selector"
-          @click="selectPreviousPart('selectedTorsoIndex', 'torsos')">
-          &#9668;
-        </button>
-        <button class="next-selector"
-          @click="selectNextPart('selectedTorsoIndex', 'torsos')">
-          &#9658;
-        </button>
-      </div>
-
-      <div class="right part">
-        <img :src="selectedRobot.rightArm.src" title="right arm" />
-        <button class="prev-selector"
-          @click="selectPreviousPart('selectedRightArmIndex', 'arms')">
-          &#9650;
-        </button>
-        <button class="next-selector"
-          @click="selectNextPart('selectedRightArmIndex', 'arms')">
-          &#9660;
-        </button>
-      </div>
+      <PartSelector
+        position="left"
+        :parts="availableParts.arms"
+        @partSelected="part => selectedRobot.leftArm=part"
+      />
+      <PartSelector
+        position="center"
+        :parts="availableParts.torsos"
+        @partSelected="part => selectedRobot.torso=part"
+      />
+      <PartSelector
+        position="right"
+        :parts="availableParts.arms"
+        @partSelected="part => selectedRobot.rightArm=part"
+      />
     </div>
 
     <div class="bottom-row">
-      <div class="bottom part">
-        <img :src="selectedRobot.base.src" title="bases" />
-        <button class="prev-selector"
-          @click="selectPreviousPart('selectedBaseIndex', 'bases')">
-          &#9668;
-        </button>
-        <button class="next-selector"
-          @click="selectNextPart('selectedBaseIndex', 'bases')">
-          &#9658;
-        </button>
-      </div>
+      <PartSelector
+        position="bottom"
+        :parts="availableParts.bases"
+        @partSelected="part => selectedRobot.base=part"
+      />
     </div>
 
     <div>
@@ -98,44 +83,32 @@
 
 <script>
 import availableParts from './data/parts';
-
-const getPreviousValidIndex = (index, length) => {
-  const deprecatedIndex = index - 1;
-  return deprecatedIndex < 0 ? length - 1 : deprecatedIndex;
-};
-
-const getNextValidIndex = (index, length) => {
-  const incrementedIndex = index + 1;
-  return incrementedIndex > length - 1 ? 0 : incrementedIndex;
-};
+import createdHookMixin from './created-hook-mixin';
+import PartSelector from './PartSelector.vue';
 
 export default {
   name: 'RobotBuilder',
+  components: { PartSelector },
+  created() {
+    console.log('Component created. Ready to fetch data.');
+  },
   data() {
     return {
       availableParts,
       cart: [],
-      robot: {
-        selectedHeadIndex: 0,
-        selectedTorsoIndex: 0,
-        selectedLeftArmIndex: 0,
-        selectedRightArmIndex: 0,
-        selectedBaseIndex: 0,
+      selectedRobot: {
+        head: {},
+        torso: {},
+        leftArm: {},
+        rightArm: {},
+        base: {},
       },
     };
   },
+  mixins: [createdHookMixin],
   computed: {
     saleBorderClass() {
       return this.selectedRobot.head.onSale ? 'sale-border' : '';
-    },
-    selectedRobot() {
-      return {
-        head: availableParts.heads[this.robot.selectedHeadIndex],
-        torso: availableParts.torsos[this.robot.selectedTorsoIndex],
-        leftArm: availableParts.arms[this.robot.selectedLeftArmIndex],
-        rightArm: availableParts.arms[this.robot.selectedRightArmIndex],
-        base: availableParts.bases[this.robot.selectedBaseIndex],
-      };
     },
   },
   methods: {
@@ -148,18 +121,6 @@ export default {
         + robot.base.cost;
       this.cart.push({ ...robot, cost });
       // this.cart.push(Object.assign({}, robot, { cost }));
-    },
-    selectNextPart(part, group) {
-      this.robot[part] = getNextValidIndex(
-        this.robot[part],
-        this.availableParts[group].length,
-      );
-    },
-    selectPreviousPart(part, group) {
-      this.robot[part] = getPreviousValidIndex(
-        this.robot[part],
-        this.availableParts[group].length,
-      );
     },
   },
 };
@@ -268,8 +229,7 @@ export default {
 }
 .add-to-cart {
   position: absolute;
-  right: 30px;
-  width: 220px;
+  width: 210px;
   padding: 3px;
   font-size: 16px;
 }
@@ -284,4 +244,26 @@ td, th {
 .sale-border {
   border: 3px solid red;
 }
+.preview {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  width: 210px;
+  height: 210px;
+  padding: 5px;
+}
+.preview-content {
+  border: 1px solid #999;
+}
+.preview img {
+  width: 50px;
+  height: 50px;
+}
+.rotate-right {
+  transform: rotate(90deg);
+}
+.rotate-left {
+  transform: rotate(-90deg);
+}
+
 </style>
