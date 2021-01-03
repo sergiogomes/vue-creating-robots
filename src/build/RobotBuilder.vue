@@ -162,7 +162,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .part {
   position: relative;
   width:165px;
