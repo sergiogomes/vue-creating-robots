@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import availableParts from './data/parts';
+import availableParts from '../data/parts';
 import createdHookMixin from './created-hook-mixin';
 import PartSelector from './PartSelector.vue';
 import CollapsibleSection from '../shared/CollapsibleSection.vue';

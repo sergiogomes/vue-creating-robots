@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import parts from '../build/data/parts';
+import parts from '../data/parts';
 
 export default {
   name: 'PartInfo',
