@@ -15,6 +15,7 @@ import SidebarStandard from '../sidebars/SidebarStandard.vue';
 Vue.use(Router);
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -64,6 +65,10 @@ export default new Router({
       name: 'Parts',
       component: PartInfo,
       props: true,
+      beforeEnter(to, from, next) {
+        const isValidId = Number.isInteger(Number(to.params.id));
+        next(isValidId);
+      },
     },
   ],
 });
